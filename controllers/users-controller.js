@@ -6,15 +6,15 @@ const UserController = (app) => {
     app.post("/api/users", createUser);
     app.delete("/api/users/:uid", deleteUser);
     app.put("/api/users/:uid", updateUser);
-    app.get("/api/users/create/:username", createUser2)
+    app.post("/api/users/create", createUser2)
 };
 
 const createUser2 = (req, res) => {
     const {username} = req.params;
+    const newUser = req.body; //
     users.push({
         _id: new Date().getTime().toString(),
-        username: username,
-        type: "blah"
+        ...newUser
     });
     res.json(users);
 }
