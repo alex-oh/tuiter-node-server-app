@@ -6,19 +6,12 @@ const UserController = (app) => {
     app.post("/api/users", createUser);
     app.delete("/api/users/:uid", deleteUser);
     app.put("/api/users/:uid", updateUser);
-    app.post("/api/users/create", createUser2)
+
+    // secondary api calls to run react examples
+    app.post("/api/users/2", createUser2);
+    app.delete("/api/users/2/:uid", deleteUser2);
+    app.put("/api/users/2/:uid", updateUser2);
 };
-
-const createUser2 = (req, res) => {
-    const {username} = req.params;
-    const newUser = req.body; //
-    users.push({
-        _id: new Date().getTime().toString(),
-        ...newUser
-    });
-    res.json(users);
-}
-
 const updateUser = (req, res) => {
     const userId = req.params["uid"];
     const updates = req.body;
@@ -52,4 +45,28 @@ const findUsers = (req, res) => {
     }
     res.json(users);
 };
+
+// secondary api calls to run react examples
+const updateUser2 = (req, res) => {
+    const userId = req.params["uid"];
+    const updates = req.body; // pull the new user passed in thru the body
+    users = users.map((usr) =>
+        usr._id === userId ? { ...usr, ...updates } : usr
+    );
+    res.json(users);
+};
+const deleteUser2 = (req, res) => {
+    const userId = req.params["uid"];
+    users = users.filter((usr) => usr._id !== userId);
+    res.json(users);
+}
+const createUser2 = (req, res) => {
+    const {username} = req.params;
+    const newUser = req.body; //
+    users.push({
+        _id: new Date().getTime().toString(),
+        ...newUser
+    });
+    res.json(users);
+}
 export default UserController;
