@@ -15,10 +15,12 @@ app.use(
 const sessionOptions = {
     secret: "any string",
     resave: false,
-    saveUnitialized: false,
+    saveUninitialized: false,
 };
 app.use(session(sessionOptions));
 app.use(express.json());
+const port = process.env.PORT || 4000;
+
 TuitsController(app);
 HelloController(app);
 UserController(app);

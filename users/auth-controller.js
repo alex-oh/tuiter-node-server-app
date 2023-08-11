@@ -34,6 +34,7 @@ const AuthController = (app) => {
         req.session.destroy();
         res.sendStatus(200);
     };
+    
     // const update = (req, res) => {};
     app.post("/api/users/register", register);
     app.post("/api/users/login", login);
@@ -41,4 +42,5 @@ const AuthController = (app) => {
     app.post("/api/users/logout", logout);
     // app.put("/api/users", update);
 };
+
 export default AuthController;
