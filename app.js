@@ -1,13 +1,20 @@
 import express from "express";
 import cors from "cors";
 import session from "express-session";
-import 'dotenv/config';
+import "dotenv/config";
+import mongoose from "mongoose"; // load mongoose library
+
 import HelloController from "./controllers/hello-controller.js";
 import UserController from "./controllers/users-controller.js";
 import TuitsController from "./controllers/tuits/tuits-controller.js";
 import AuthController from "./users/auth-controller.js";
 
+const CONNECTION_STRING =
+    process.env.DB_CONNECTION_STRING || "mongodb://127.0.0.1:27017/tuiter";
+
 const app = express();
+// connect mongoose to the tuiter database
+mongoose.connect(CONNECTION_STRING);
 app.use(
     cors({
         credentials: true,
