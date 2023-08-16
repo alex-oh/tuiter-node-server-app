@@ -14,8 +14,8 @@ const CONNECTION_STRING = process.env.DB_CONNECTION_STRING || "mongodb://127.0.0
 const app = express();
 // connect mongoose to the tuiter database
 // console.log(CONNECTION_STRING);
+mongoose.connect("mongodb://127.0.0.1:27017/tuiter");
 mongoose.connect(CONNECTION_STRING);
-// mongoose.connect("mongodb://127.0.0.1:27017/tuiter")
 app.use(
     cors({
         credentials: true,
