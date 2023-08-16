@@ -1,33 +1,42 @@
 import * as usersDao from "./users-dao.js";
+
 const AuthController = (app) => {
-    const register = (req, res) => {
-        const username = req.body.username;
-        const user = usersDao.findUserByUsername(username);
-        if (user) {
+    const register = async (req, res) => {
+        const {username, password} = req.body;
+        const existingUser = await usersDao.findUserByUsername(username);
+        if (existingUser) {
             res.sendStatus(409);
             return;
         }
-        const newUser = usersDao.createUser(req.body);
+        const user = {
+            username,
+            password
+        }
+        const newUser = await usersDao.createUser(user);
+        console.log(newUser);
         req.session["currentUser"] = newUser;
         res.json(newUser);
     };
-    const login = (req, res) => {
+    const login = async (req, res) => {
         const username = req.body.username;
         const password = req.body.password;
-        const user = usersDao.findUserByCredentials(username, password);
+        const user = await usersDao.findUserByCredentials(username, password);
+        console.log(user);
         if (user) {
             req.session["currentUser"] = user;
             res.json(user);
         } else {
-            res.sendStatus(404);
+            res.json({error: "User not found"});
+            return;
         }
     };
-    const profile = (req, res) => {
+    const profile = async (req, res) => {
         const currentUser = req.session["currentUser"];
         if (!currentUser) {
             res.sendStatus(404);
             return;
         }
+        console.log(currentUser);
         res.json(currentUser);
     };
     const logout = async (req, res) => {

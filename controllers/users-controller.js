@@ -1,63 +1,65 @@
-import people from "../users/users.js";
-let users = people;
+import * as usersDao from '../users/users-dao.js';
 let currentUser = null;
 
 const UserController = (app) => {
-    const updateUser = (req, res) => {
-        const userId = req.params["uid"];
-        const updates = req.body;
-        users = users.map((usr) =>
-            usr._id === userId ? { ...usr, ...updates } : usr
-        );
-        res.sendStatus(200);
+    // find users
+    const findAllUsers = async (req, res) => {
+        const username = req.query.username;
+        const password = req.query.password;
+        if (username && password) {
+            const user = await usersDao.findUserByCredentials(username, password);
+            if (user) {
+                res.json(user);
+            } else {
+                res.sendStatus(404);
+            }
+        } else {
+            const users = await usersDao.findAllUsers();
+            res.json(users);
+        }
     };
-    const deleteUser = (req, res) => {
-        const userId = req.params["uid"];
-        users = users.filter((usr) => usr._id !== userId);
-        res.sendStatus(200);
-    };
-    const createUser = (req, res) => {
-        const newUser = req.body;
-        newUser._id = new Date().getTime() + "";
-        users.push(newUser);
-        res.json(newUser);
-    };
-    const findUserById = (req, res) => {
+    const findUserById = async (req, res) => {
         const userId = req.params.uid;
-        const user = users.find((u) => u._id === userId);
+        const user = await usersDao.findUserById(userId);
         res.json(user);
     };
-    const findUsers = (req, res) => {
-        const type = req.query.type;
-        if (type) {
-            const usersOfType = users.filter((u) => u.type === type);
-            res.json(usersOfType);
-            return;
-        }
+    const findUserByUsername = async (req, res) => {
+        const usernameToFind = req.params.username;
+        const user = await usersDao.findUserByUsername(usernameToFind);
+        res.json(user);
+    }
+    // create user
+    const createUser = async (req, res) => {
+        const newUser = await usersDao.createUser(req.body);
+        console.log(newUser);
+        const users = await usersDao.findAllUsers();
         res.json(users);
     };
+    // update users
+    const updateUser = async (req, res) => {
+        const userId = req.params["uid"];
+        const status = await usersDao.updateUser(userId, req.body);
+        const user = await usersDao.findUserById(userId)
+        req.session["currentUser"] = user;
+        res.json(status);
+    };
+    // delete users
+    const deleteUser = async (req, res) => {
+        const userId = req.params["uid"];
+        const status = await usersDao.deleteUser(userId);
+        const users = await usersDao.findAllUsers();
+        res.json(users);
+    };
+    
 
     // secondary api calls to run react examples
-    const updateUser2 = (req, res) => {
+    const updateUser2 = async (req, res) => {
         const userId = req.params["uid"];
         const updates = req.body; // pull the new user passed in thru the body
-        users = users.map((usr) =>
-            usr._id === userId ? { ...usr, ...updates } : usr
-        );
-        res.json(users);
-    };
-    const deleteUser2 = (req, res) => {
-        const userId = req.params["uid"];
-        users = users.filter((usr) => usr._id !== userId);
-        res.json(users);
-    };
-    const createUser2 = (req, res) => {
-        const { username } = req.params;
-        const newUser = req.body; //
-        users.push({
-            _id: new Date().getTime().toString(),
-            ...newUser,
-        });
+        console.log(updates);
+        const status = await usersDao.updateUser(userId, updates);
+        const user = await usersDao.findUserById(userId)
+        const users = await usersDao.findAllUsers();
         res.json(users);
     };
 
@@ -111,21 +113,20 @@ const UserController = (app) => {
         res.json({ status: "ok" });
     };
 
-    app.get("/api/users", findUsers);
+    app.get("/api/users", findAllUsers);
     app.get("/api/users/:uid", findUserById);
+    app.get("/api/users/username/:username", findUserByUsername);
     app.post("/api/users", createUser);
     app.delete("/api/users/:uid", deleteUser);
     app.put("/api/users/:uid", updateUser);
 
     // secondary api calls to run react examples
-    app.post("/api/users/2", createUser2);
-    app.delete("/api/users/2/:uid", deleteUser2);
     app.put("/api/users/2/:uid", updateUser2);
 
     //profile operation patterns
-    app.post("/api/users/register", register);
-    app.post("/api/users/login", login);
-    app.post("/api/users/profile", profile);
-    app.post("/api/users/logout", logout);
+    // app.post("/api/users/register", register);
+    // app.post("/api/users/login", login);
+    // app.post("/api/users/profile", profile);
+    // app.post("/api/users/logout", logout);
 };
 export default UserController;

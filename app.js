@@ -13,7 +13,7 @@ const CONNECTION_STRING = process.env.DB_CONNECTION_STRING;
 
 const app = express();
 // connect mongoose to the tuiter database
-console.log(CONNECTION_STRING);
+// console.log(CONNECTION_STRING);
 // mongoose.connect("mongodb://127.0.0.1:27017/tuiter");
 mongoose.connect(CONNECTION_STRING);
 app.use(
