@@ -24,7 +24,7 @@ const deleteTuit = async (req, res) => {
     // retrieve the ID of the tuit we want to remove
     const tuitdIdToDelete = req.params["tid"];
     const status = await tuitsDao.deleteTuit(tuitdIdToDelete);
-    res.sendStatus(status);
+    res.json(status);
 };
 export default (app) => {
     app.post("/api/tuits", createTuit);
